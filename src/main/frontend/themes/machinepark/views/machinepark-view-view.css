@@ -1,0 +1,1784 @@
+.my-test-view-view {
+    padding: 2px;
+    box-sizing: border-box;
+    display: block;
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+    --cv-blue: 212 96% 54%;
+    --cv-purple: 259 97% 66%;
+    --cv-dropzone-border-color: hsl(var(--cv-blue) / 0.5);
+    --cv-dropzone-bg-color: hsl(var(--cv-blue) / 0.2);
+    --cv-droptarget-border-color: hsl(var(--cv-purple) / 1);
+    --cv-droptarget-bg-color: hsl(var(--cv-purple) / 0.4);
+    --cv-stripe-width: 2px;
+    --cv-stripe-gap: 9px;
+    --cv-stripe-color: hsl(var(--cv-blue) / 0.2);
+    --cv-layout-border-color: var(--lumo-contrast-40pct);
+    --cv-checkerboard-color1: hsl(0 0% 0% / 0.05);
+    --cv-checkerboard-color2: hsl(0 0% 100% / 0.05);
+    --cv-checkerboard-size: 16px;
+
+}
+
+.my-test-view-view[dragging] {
+    --cv-checkerboard-color1: hsl(var(--cv-blue) / 0.2);
+    --cv-checkerboard-color2: hsl(var(--cv-blue) / 0.1);
+    --cv-layout-border-color: var(--cv-dropzone-border-color);
+}
+
+.my-test-view-view .preview-container {
+    display: contents;
+}
+
+/* The root layout is not necessarily inside a flex box so width/height needs to be used */
+.my-test-view-view .preview-container > .layout[style*='align-self: stretch'] {
+    width: 100%;
+}
+.my-test-view-view .preview-container > .layout[style*='flex-grow: 1'] {
+    height: 100%;
+}
+
+/* Apply some default gap and padding to layouts that don't have inline styles for them while dragging. */
+.my-test-view-view[dragging] .layout:not([style*='gap:']) {
+    gap: 2px;
+}
+
+.my-test-view-view[dragging] .layout:not([style*='padding:'], [empty]) {
+    padding: 8px;
+}
+
+.my-test-view-view .cover-overlay {
+    position: absolute;
+    border-radius: 1px;
+}
+
+.my-test-view-view:not([starting-drag]) .cover-overlay.editable-hovering {
+    outline: 2px solid hsl(var(--cv-blue) / 1);
+    outline-offset: -1px;
+}
+
+.my-test-view-view:not([starting-drag]) .cover-overlay.editable-editing {
+    outline: 1px solid hsl(var(--cv-blue) / 1);
+    outline-offset: -1px;
+    box-shadow: inset 0 0 0 2px var(--lumo-base-color);
+}
+
+.my-test-view-view .overlays,
+.my-test-view-view .drop-zones {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.my-test-view-view:not([dragging]) .drop-zones {
+    pointer-events: none;
+}
+
+.my-test-view-view .drop-zone {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 1px;
+    min-height: 10px;
+    min-width: 10px;
+}
+
+.my-test-view-view[dragging] .drop-zone:not([empty-layout]) {
+    outline: 1px dashed var(--cv-dropzone-border-color);
+    outline-offset: -2px;
+    background-color: var(--cv-dropzone-bg-color);
+}
+
+.my-test-view-view .drop-zone[remaining-space] {
+    background: repeating-linear-gradient(
+            -45deg,
+            var(--cv-stripe-color),
+            var(--cv-stripe-color) var(--cv-stripe-width),
+            transparent var(--cv-stripe-width),
+            transparent var(--cv-stripe-gap)
+    );
+}
+
+.my-test-view-view[dragging] .drop-zone[drag-over] {
+    background: var(--cv-droptarget-bg-color);
+    outline: 1px solid var(--cv-droptarget-border-color);
+    outline-offset: -1px;
+    box-shadow: inset 0 0 0 2px var(--lumo-base-color);
+}
+
+.drop-zone[empty-layout] {
+    z-index: -1;
+}
+
+.my-test-view-view:not([readonly]) .layout[empty],
+vaadin-form-layout[empty] {
+    border-radius: 1px;
+    background: repeating-conic-gradient(var(--cv-checkerboard-color1) 0% 25%, var(--cv-checkerboard-color2) 0% 50%) 50% /
+    var(--cv-checkerboard-size) var(--cv-checkerboard-size);
+    background-clip: content-box;
+    outline: 1px dashed var(--cv-layout-border-color);
+    outline-offset: -2px;
+}
+.my-test-view-view[dragging]:not([readonly]) vaadin-form-layout[empty] {
+    background: transparent;
+}
+
+.my-test-view-view .layout[empty]::before {
+    content: '';
+    display: block;
+    min-width: 64px;
+    min-height: 32px;
+}
+
+.my-test-view-view[readonly] .drop-zones,
+.my-test-view-view[readonly] .overlays {
+    display: none;
+}
+
+.my-test-view-view[inline-editing] .drop-zones,
+.my-test-view-view[inline-editing] .overlays {
+    display: none;
+}
+.my-test-view-view .content-wrapper[contenteditable='true'] {
+    display: inline-block;
+    overflow: hidden;
+    width: 100%;
+}
+
+.my-test-view-view[dragging] vaadin-form-layout {
+    padding: 8px;
+}
+.my-test-view-view vaadin-form-layout[empty]::before {
+    content: '';
+    display: block;
+    min-width: 64px;
+    min-height: 32px;
+}
+
+.my-test-view-view[dragging] vaadin-form-layout:not([empty])::after {
+    content: '';
+    display: block;
+    min-width: 64px;
+    min-height: 32px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-size: calc(12px + (26 - 10) * ((100vw - 300px) / (1600 - 300)));
+    line-height: 1.2;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-family: 'Roboto', sans-serif;
+}
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+    min-width: 70%;
+    word-break: break-word;
+
+}
+
+html {
+    /* Setzt die globale Standard-Schriftgröße für Lumo */
+    --lumo-font-size-xxxl: calc(16px + (24 - 16) * ((100vw - 300px) / (1600 - 300))); /* Beispiel für sehr groß */
+    --lumo-font-size-xxl: calc(14px + (20 - 14) * ((100vw - 300px) / (1600 - 300)));
+    --lumo-font-size-xl: calc(12px + (18 - 12) * ((100vw - 300px) / (1600 - 300)));
+    --lumo-font-size-l: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+    --lumo-font-size-m: calc(8px + (12 - 8) * ((100vw - 300px) / (1600 - 300)));
+    --lumo-font-size-s: calc(7px + (10 - 7) * ((100vw - 300px) / (1600 - 300)));
+    --lumo-font-size-xs: calc(6px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));
+    --lumo-font-size-xxs: calc(5px + (7 - 5) * ((100vw - 300px) / (1600 - 300)));
+
+    /* Passen Sie auch die Line-Heights an, wenn die Schrift größer wird */
+    --lumo-line-height-m: 1.5; /* Oder passen Sie diese Berechnung an Ihre Bedürfnisse an */
+    --lumo-line-height-s: 1.3;
+}
+
+vaadin-dialog-overlay::part(overlay), .resizer-container {
+    min-width: fit-content;
+    max-width: 100%;
+    word-break: break-word;
+
+}
+
+
+
+/* ==========================================================================
+   RESPONSIVE DESIGN ANPASSUNGEN 786px
+   ========================================================================== */
+
+/* Für Bildschirme bis 768px Breite (Tablets und Smartphones) */
+@media screen and (max-width: 768px) {
+    .my-test-view-view {
+        padding: 10px;
+    }
+}
+@media (max-width: 768px) {
+    .articleGrid {
+        purchaseDate-column, deleted-column, warrantyDuration-column {
+            /* Anordnung der Filter */
+
+            .topLayout {
+                display: flex;
+                flex-direction: column;
+                flex-wrap: wrap;
+                align-items: baseline;
+            }
+
+            .topLayout {
+                display: flex;
+                flex-direction: column; /*untereinander */
+                align-items: stretch; /* Damit sie die volle Breite nehmen */
+            }
+
+            .topLayout > * {
+                width: 90vw;
+                margin-bottom: 1px;
+                margin-right: 0;
+                font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+                font-family: 'Roboto', sans-serif;
+            }
+
+            .attributeGridLayout > vaadin-combo-box {
+                width: 100%;
+                margin-top: 1px;
+                margin-bottom: 1px;
+                padding-top: 2px;
+                padding-bottom: 2px;
+                font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+            }
+
+            .attributeGridLayout > vaadin-button {
+                margin-top: 1px;
+                margin-bottom: 1px;
+                padding-top: 6px;
+                padding-bottom: 8px;
+                font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+            }
+
+            /* Anordnung der Filter */
+            .attributeGridLayout {
+                display: flex;
+                flex-direction: column;
+                flex-wrap: wrap;
+                align-items: baseline;
+                gap: 2px;
+                font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+            }
+
+            .attributeGridLayout {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+            }
+
+            .attributeGridLayout > * {
+                width: 90vw;
+                margin-bottom: 1px;
+                margin-right: 0;
+                font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+                font-family: 'Roboto', sans-serif;
+            }
+            vaadin-grid.attributeGridLayout {
+                width: 100%;
+            }
+
+            /* Anordnung der Management-Buttons */
+            .managementButtonsLayout {
+                display: flex;
+                flex-direction: column;
+                flex-wrap: wrap;
+                gap: 10px; /* Abstand zwischen den Buttons */
+                font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+                font-family: 'Roboto', sans-serif;
+            }
+
+            .managementButtonsLayout > button {
+                flex-grow: 1; /* Buttons nehmen gleichen Platz ein */
+                min-width: auto; /* Verhindert, dass Buttons zu schmal werden */
+                font-size: calc(16px + (26 - 16) * ((100vw - 300px) / (1600 - 300)));
+                font-family: 'Roboto', sans-serif;
+            }
+
+            /* Schriftgröße der Tabelle */
+
+            .articleGrid {
+                font-size: calc(16px + (26 - 16) * ((100vw - 300px) / (1600 - 300)));
+                font-family: 'Roboto', sans-serif;
+            }
+
+            /* Anpassungen für den Artikel-Dialog */
+
+            .v-dialog { /* Generische Klasse für Vaadin Dialoge */
+                width: 95%;
+                height: auto;
+                max-height: 90%;
+                overflow-y: auto;
+                flex-direction: column;
+            }
+
+            .dialogLayout { /* HorizontalLayout im Dialog */
+                flex-direction: column;
+                width: 100%;
+                height: auto;
+                max-height: 90%;
+                overflow-y: auto;
+            }
+
+            .loanDialogLayout {
+                flex-direction: column;
+                width: 100%;
+                height: auto;
+                max-height: 90%;
+                overflow-y: auto;
+            }
+
+            .leftLayout, .rightLayout {
+                width: 80vw;
+                margin-bottom: 20px;
+            }
+
+            .articleDialog::part(overlay) {
+                width: 80% !important;
+                max-width: 90% !important;
+            }
+
+            .loanDialog::part(overlay) {
+                width: 40% !important;
+                max-width: 60% !important;
+            }
+
+            /* Anordnung der Buttons im Artikel-Dialog (unten rechts) */
+
+            .rightButtonsLayout {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                justify-content: flex-end; /* Rechts ausrichten */
+            }
+
+            .rightButtonsLayout > button {
+                flex-grow: 0; /* Buttons nehmen nur benötigten Platz ein */
+                min-width: auto;
+            }
+
+            /* Anordnung der Buttons im "Ausleihen"-Dialog */
+
+            .loanButtonsLayout {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                justify-content: flex-end;
+            }
+
+            .loanButtonsLayout > button {
+                flex-grow: 0;
+                flex-direction: column;
+                min-width: auto;
+            }
+
+            .loanLayout {
+                width: 100%;
+                font-size: 0.8em;
+            }
+
+            .loanDialogLayout {
+                width: 80vw;
+                height: auto;
+                max-height: 90%;
+                overflow-y: auto;
+                font-size: calc(10px + (26 - 16) * ((100vw - 300px) / (1600 - 300)));
+                flex-direction: column;
+            }
+
+
+            /* Stil für die Historien-Überschrift */
+
+            .historyTitle {
+                margin-bottom: 10px;
+                font-size: calc(10px + (26 - 16) * ((100vw - 300px) / (1600 - 300)));
+            }
+
+            /* Höhe der Historien-Grid anpassen, falls nötig */
+
+            .historyGrid {
+                width: auto;
+            !important;
+                height: auto !important; /* Automatische Höhe für bessere Anpassung */
+            }
+
+            .titleLayout {
+                width: 50%;
+            }
+
+            .userLayout {
+                width: 90vw;
+                height: auto;
+                max-height: 90%;
+                overflow-y: auto;
+                font-size: calc(10px + (26 - 16) * ((100vw - 300px) / (1600 - 300)));
+                flex-direction: column;
+            }
+
+            .userDialogLayout {
+                width: 80% !important;
+                max-width: 90% !important;
+            }
+            .contactsLayout {
+                width: 90vw;
+                height: auto;
+                max-height: 90%;
+                overflow-y: auto;
+                font-size: calc(10px + (26 - 16) * ((100vw - 300px) / (1600 - 300)));
+                flex-direction: column;
+            }
+
+            .articleDialog {
+                width: 80% !important;
+                max-width: 90% !important;
+            }
+
+            .articlesLayout {
+                width: 90vw;
+                height: auto;
+                max-height: 90%;
+                overflow-y: auto;
+                font-size: calc(10px + (26 - 16) * ((100vw - 300px) / (1600 - 300)));
+                flex-direction: column;
+            }
+        }
+    }
+}
+/* ==========================================================================
+   RESPONSIVE DESIGN ANPASSUNGEN bis 600px
+   ========================================================================== */
+
+/* Für Bildschirme bis 600px Breite (noch kleinere Smartphones) */
+@media screen and (max-width: 600px) {
+    vaadin-dialog-overlay::part(overlay), .resizer-container {
+        width: 100% !important;
+        min-height: 60vh !important;
+        max-height: 80vh !important;
+
+        padding: 0 !important;
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+
+        gap: 0;
+    }
+
+
+    /* Das Haupt-Content-Layout des Dialogs (VerticalLayout mit attributeGridLayout) */
+    vaadin-vertical-layout.attributeGridLayout {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        padding: var(--lumo-space-s);
+        gap: 0;
+        min-height: 0;
+
+    }
+
+    /* Grid-spezifische Stile */
+    vaadin-grid.attributeGridLayout, .rightLayout {
+        width: 100%;
+        flex-grow: 1;
+        min-height: 0;
+        height: auto !important;
+        font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+        --vaadin-grid-cell-padding: var(--lumo-space-xs);
+        --_grid-min-height: 0px !important;
+        overflow-x: auto !important;
+    }
+
+    /* NEU & KRITISCH: Überschreibe den internen Scroller des Grids */
+    vaadin-grid.attributeGridLayout::part(scroller) {
+        height: 100% !important; /* Der Scroller soll 100% der Höhe seines Elternelements (des Grids) einnehmen */
+        overflow-y: auto !important; /* Der Scroller muss **vertikal** scrollbar sein */
+        overflow-x: auto !important; /* **Der Scroller muss auch HORIZONTAL scrollbar sein!** */
+        min-height: 0 !important; /* Erlaubt dem Scroller, flexibel zu schrumpfen */
+    }
+
+    /* NEU & KRITISCH: Überschreibe die problematischen Regeln auf dem #items-Element */
+    vaadin-grid.attributeGridLayout #items {
+        height: auto !important;
+        flex-shrink: 1 !important;
+        overflow: hidden !important;
+        display: block;
+        position: static !important;
+        width: auto !important;
+        left: auto !important;
+    }
+
+    /* NEU & WICHTIG: Anpassungen der Grid-Zellen für Responsivität */
+    vaadin-grid.attributeGridLayout::part(header-cell) {
+        flex-basis: auto !important;
+        flex-grow: 1 !important;
+        flex-shrink: 1 !important;
+        min-width: 50px !important;
+        box-sizing: border-box;
+        text-align: left;
+        font-weight: bold !important;
+        font-size: calc(10px + (14 - 8) * ((100vw - 300px) / (1600 - 300))) !important;
+    }
+    vaadin-grid.attributeGridLayout::part(cell) {
+        flex-basis: auto !important;
+        flex-grow: 1 !important;
+        flex-shrink: 1 !important;
+        min-width: 50px !important;
+        box-sizing: border-box;
+        text-align: left;
+    }
+
+    /* NEU & WICHTIG: Textumbruch in Grid-Zellen erlauben */
+    vaadin-grid.attributeGridLayout vaadin-grid-cell-content {
+        white-space: normal !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        word-break: break-word;
+        font-size: calc(8px + (12 - 6) * ((100vw - 300px) / (1600 - 300))) !important;
+    }
+
+    /* Stil für Buttons INNERHALB des Grids */
+    vaadin-grid.attributeGridLayout vaadin-button::part(button) {
+        margin-top: 1px;
+        margin-bottom: 0;
+        gap: 0;
+        padding-top: 6px;
+        padding-bottom: 8px;
+    }
+    vaadin-grid.attributeGridLayout vaadin-button::part(label) {
+        font-size: calc(6px + (10 - 7) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+        font-weight: normal !important;
+    }
+
+    /* Stil für Combo-Boxen INNERHALB des Grids oder im gleichen Kontext */
+    vaadin-grid.attributeGridLayout vaadin-combo-box::part(label) {
+        font-size: calc(6px + (10 - 6) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+        font-weight: normal !important;
+    }
+
+    /* TOP LAYOUT - für allgemeine Filter/Header-Elemente */
+    vaadin-vertical-layout.topLayout {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        padding: var(--lumo-space-s);
+        gap: 0;
+        min-height: 0;
+    }
+    .topLayout {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+    }
+    .topLayout > * {
+        width: 100%;
+        margin-bottom: 0;
+        margin-right: 0;
+        /* ... font-family ... */
+    }
+    .topLayout > vaadin-combo-box {
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 1px;
+        padding-bottom: 0;
+        /* ... font sizes ... */
+    }
+    .topLayout > vaadin-button {
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 6px;
+        padding-bottom: 8px;
+        /* ... font sizes ... */
+    }
+
+    /* MANAGEMENT BUTTONS LAYOUT */
+    .managementButtonsLayout {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+        gap: var(--lumo-space-s);
+        align-items: center !important;
+        justify-content: center;
+    }
+    /* Host-Element des Vaadin-Buttons im Management Layout */
+    .managementButtonsLayout > vaadin-button {
+        min-width: 30%;
+        max-width: 80%;
+        display: flex;
+    }
+    /* Interner 'button'-Part für Padding/Margin des Management Buttons */
+    .managementButtonsLayout > vaadin-button::part(button) {
+        margin-top: 1px;
+        margin-bottom: 1px;
+        padding-top: 6px;
+        padding-bottom: 8px;
+    }
+    /* Interner 'label'-Part für die Schriftgröße des Management Buttons */
+    .managementButtonsLayout > vaadin-button::part(label) {
+        font-size: calc(8px + (16 - 5) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+        font-weight: normal !important;
+    }
+
+    .managementButtonsLayout vaadin-text-field {
+        width: 100%;
+        margin-top: 1px;
+        margin-bottom: 1px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        font-size: calc(8px + (12 - 6) * ((100vw - 300px) / (1600 - 300))) !important;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    /* Stil für die Historien-Überschrift */
+    .historyTitle {
+        margin-bottom: 10px;
+        font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+    }
+
+    /* Dialog-Anpassungen (diese könnten sich mit vaadin-dialog-overlay überschneiden) */
+    .articleDialog::part(overlay),
+    .loanDialog::part(overlay) {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+    }
+
+    /* Layouts innerhalb von Dialogen */
+    .loanDialogLayout,
+    .userDialogLayout,
+    .contactsLayout,
+    .articlesLayout,
+    .attributeLayout {
+        width: 100%;
+        height: auto;
+        max-height: 90%;
+        overflow-y: auto;
+        font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+        flex-direction: column;
+    }
+
+    /* Spezifische Layouts */
+    .leftLayout{
+        width: 80vw;
+        -bottom: 20px;
+        gap: 0;
+    }
+
+    /* User Layouts */
+    .userLayout {
+        width: 90vw;
+        max-height: 90%;
+        height: 200px;
+        font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+    }
+    .userTitleLayout {
+        font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+    }
+
+    /* Buttons in .rightButtonsLayout und .loanButtonsLayout */
+    .rightButtonsLayout,
+    .loanButtonsLayout {
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+        gap: var(--lumo-space-s);
+    }
+    .rightButtonsLayout > button,
+    .loanButtonsLayout > button {
+        width: 100%;
+        font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+    }
+
+    /* Loan Layout */
+    .loanLayout {
+        width: 100%;
+        flex-direction: column;
+        font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+    }
+}
+
+
+/* ==========================================================================
+   RESPONSIVE DESIGN ANPASSUNGEN ab 601px bis 992px (Zwischengrössen)
+   ========================================================================== */
+
+@media screen and (min-width: 601px) and (max-width: 992px) {
+        vaadin-dialog-overlay::part(overlay), .resizer-container {
+            width: 100% !important;
+            min-height: 60vh !important;
+            max-height: 80vh !important;
+
+            padding: 0 !important;
+            box-sizing: border-box;
+
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+
+            gap: 0;
+        }
+
+
+        /* Das Haupt-Content-Layout des Dialogs (VerticalLayout mit attributeGridLayout) */
+        vaadin-vertical-layout.attributeGridLayout {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: var(--lumo-space-s);
+            gap: 0;
+            min-height: 0;
+        }
+
+        /* Grid-spezifische Stile */
+        vaadin-grid.attributeGridLayout, .rightLayout {
+            width: 100%;
+            flex-grow: 1;
+            min-height: 0;
+            height: auto !important;
+            font-size: calc(10px + (12 - 8) * ((100vw - 300px) / (1600 - 300)));
+            --vaadin-grid-cell-padding: var(--lumo-space-xs);
+            --_grid-min-height: 0px !important;
+            overflow-x: auto !important;
+        }
+
+        /* NEU & KRITISCH: Überschreibe den internen Scroller des Grids */
+        vaadin-grid.attributeGridLayout::part(scroller) {
+            height: 100% !important; /* Der Scroller soll 100% der Höhe seines Elternelements (des Grids) einnehmen */
+            overflow-y: auto !important; /* Der Scroller muss **vertikal** scrollbar sein */
+            overflow-x: auto !important; /* **Der Scroller muss auch HORIZONTAL scrollbar sein!** */
+            min-height: 0 !important; /* Erlaubt dem Scroller, flexibel zu schrumpfen */
+        }
+
+        /* NEU & KRITISCH: Überschreibe die problematischen Regeln auf dem #items-Element */
+        vaadin-grid.attributeGridLayout #items {
+            height: auto !important;
+            flex-shrink: 1 !important;
+            overflow: hidden !important;
+            display: block;
+            position: static !important;
+            width: auto !important;
+            left: auto !important;
+        }
+
+        /* NEU & WICHTIG: Anpassungen der Grid-Zellen für Responsivität */
+
+        vaadin-grid.attributeGridLayout::part(cell) {
+            flex-basis: auto !important;
+            flex-grow: 1 !important;
+            flex-shrink: 1 !important;
+            min-width: 50px !important;
+            text-align: left;
+        }
+
+    vaadin-grid.attributeGridLayout::part(header-cell) {
+        flex-basis: auto !important;
+        flex-grow: 1 !important;
+        flex-shrink: 1 !important;
+        min-width: 50px !important;
+        box-sizing: border-box;
+        font-weight: bold !important;
+        text-align: left;
+        font-size: calc(12px + (16 - 10) * ((100vw - 300px) / (1600 - 300))) !important;
+    }
+
+        /* NEU & WICHTIG: Textumbruch in Grid-Zellen erlauben */
+        vaadin-grid.attributeGridLayout vaadin-grid-cell-content {
+            white-space: normal !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            word-break: break-word;
+            font-size: calc(10px + (12 - 6) * ((100vw - 300px) / (1600 - 300))) !important;
+        }
+
+        /* Stil für Buttons INNERHALB des Grids */
+        vaadin-grid.attributeGridLayout vaadin-button::part(button) {
+            margin-top: 1px;
+            margin-bottom: 0;
+            gap: 0;
+            padding-top: 6px;
+            padding-bottom: 8px;
+        }
+        vaadin-grid.attributeGridLayout vaadin-button::part(label) {
+            font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300))) !important;
+            line-height: normal !important;
+            font-weight: normal !important;
+        }
+
+        /* Stil für Combo-Boxen INNERHALB des Grids oder im gleichen Kontext */
+        vaadin-grid.attributeGridLayout vaadin-combo-box::part(label) {
+            font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300))) !important;
+            line-height: normal !important;
+            font-weight: normal !important;
+        }
+
+        /* TOP LAYOUT - für allgemeine Filter/Header-Elemente */
+        vaadin-vertical-layout.topLayout {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: var(--lumo-space-s);
+            gap: 0;
+            min-height: 0;
+        }
+        .topLayout {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0;
+            font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+        }
+        .topLayout > * {
+            width: 100%;
+            margin-bottom: 0;
+            margin-right: 0;
+            /* ... font-family ... */
+        }
+        .topLayout > vaadin-combo-box {
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 1px;
+            padding-bottom: 0;
+            /* ... font sizes ... */
+        }
+        .topLayout > vaadin-button {
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 6px;
+            padding-bottom: 8px;
+            /* ... font sizes ... */
+        }
+
+        /* MANAGEMENT BUTTONS LAYOUT */
+        .managementButtonsLayout {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
+            gap: var(--lumo-space-s);
+            align-items: center !important;
+            justify-content: center;
+        }
+        /* Host-Element des Vaadin-Buttons im Management Layout */
+        .managementButtonsLayout > vaadin-button {
+            min-width: 22%;
+            max-width: 80%;
+            display: flex;
+        }
+        /* Interner 'button'-Part für Padding/Margin des Management Buttons */
+        .managementButtonsLayout > vaadin-button::part(button) {
+            margin-top: 1px;
+            margin-bottom: 1px;
+            padding-top: 6px;
+            padding-bottom: 8px;
+        }
+        /* Interner 'label'-Part für die Schriftgröße des Management Buttons */
+        .managementButtonsLayout > vaadin-button::part(label) {
+            font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300))) !important;
+            line-height: normal !important;
+            font-weight: normal !important;
+        }
+
+        .managementButtonsLayout vaadin-text-field {
+            width: 100%;
+            margin-top: 1px;
+            margin-bottom: 1px;
+            padding-top: 2px;
+            padding-bottom: 2px;
+            font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Stil für die Historien-Überschrift */
+        .historyTitle {
+            margin-bottom: 10px;
+            font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+        }
+
+        /* Dialog-Anpassungen (diese könnten sich mit vaadin-dialog-overlay überschneiden) */
+        .articleDialog::part(overlay),
+        .loanDialog::part(overlay) {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100% !important;
+            max-height: 100% !important;
+        }
+
+        /* Layouts innerhalb von Dialogen */
+        .loanDialogLayout,
+        .userDialogLayout,
+        .contactsLayout,
+        .articlesLayout,
+        .attributeLayout {
+            width: 100%;
+            height: auto;
+            max-height: 90%;
+            overflow-y: auto;
+            font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+            flex-direction: column;
+        }
+
+        /* Spezifische Layouts */
+        .leftLayout{
+            width: 80vw;
+            -bottom: 20px;
+            gap: 0;
+        }
+
+        /* User Layouts */
+        .userLayout {
+            width: 90vw;
+            max-height: 90%;
+            height: 200px;
+            font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+        }
+        .userTitleLayout {
+            font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+        }
+
+        /* Buttons in .rightButtonsLayout und .loanButtonsLayout */
+        .rightButtonsLayout,
+        .loanButtonsLayout {
+            flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
+            gap: var(--lumo-space-s);
+        }
+        .rightButtonsLayout > button,
+        .loanButtonsLayout > button {
+            width: 100%;
+            font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+        }
+
+        /* Loan Layout */
+        .loanLayout {
+            width: 100%;
+            flex-direction: column;
+            font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+        }
+    }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN ANPASSUNGEN ab 993px
+   ========================================================================== */
+
+@media screen and (min-width: 993px) {
+
+    /* --- GLOBALE STILE (Dein .topLayout und andere allgemeine Regeln) --- */
+
+    .my-test-view-view {
+        padding: 20px;
+        font-size: 12px;
+    }
+    .topLayout {
+        width: 80%;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: baseline;
+    }
+    /* Diese Regel ist breit gefasst, wird aber nun hoffentlich von spezifischeren Regeln überschrieben */
+    .topLayout > * {
+        margin-right: 10px;
+        margin-bottom: 0;
+        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300))) !important;
+    }
+    .topLayout1 {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: baseline;
+    }
+    .topLayout1 > * {
+        margin-right: 10px;
+        margin-bottom: 0;
+        font-size: 12px;
+    }
+    .v-dialog {
+        width: 80%;
+        height: 90%;
+        overflow-y: auto;
+    }
+    .articleDialog::part(overlay) {
+        width: 80% !important;
+        max-width: 90% !important;
+        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));
+        font-family: 'Roboto', sans-serif;
+        word-break: break-word;
+    }
+    .loanDialog::part(overlay) {
+        width: 40% !important;
+        max-width: 60% !important;
+        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));
+    }
+    .dialogLayout {
+        width: 80%;
+        height: 90%;
+        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));
+    }
+    .attributeLayout {
+        width: 80%;
+        height: 90%;
+        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));
+        flex-direction: column;
+    }
+    .topLayoutContact {
+        min-width: fit-content;
+        flex-direction: row;
+        flex-grow: 1;
+        align-items: flex-start;
+    }
+    .leftLayoutContact {
+        width: 40% !important;
+        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));
+    }
+    .rightLayoutContact {
+        width: 60% !important;
+        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));
+        gap: 0;
+    }
+
+    /* Komponenten INNERHALB von .topLayout .leftLayout */
+    .topLayout .leftLayout {
+        width: 50%;
+        font-size: calc(6px + (10 - 6) * ((100vw - 300px) / (1600 - 300))) !important;
+    }
+    .topLayout .leftLayout vaadin-text-field::part(label),
+    .topLayout .leftLayout vaadin-text-field::part(input-field),
+    .topLayout .leftLayout vaadin-text-field::part(value),
+    .topLayout .leftLayout vaadin-text-field::part(placeholder),
+    .topLayout .leftLayout vaadin-combo-box::part(label),
+    .topLayout .leftLayout vaadin-combo-box::part(input-field),
+    .topLayout .leftLayout vaadin-combo-box::part(value),
+    .topLayout .leftLayout vaadin-combo-box::part(placeholder),
+    .topLayout .leftLayout vaadin-date-picker::part(label),
+    .topLayout .leftLayout vaadin-date-picker::part(input-field),
+    .topLayout .leftLayout vaadin-date-picker::part(value),
+    .topLayout .leftLayout vaadin-date-picker::part(placeholder),
+    .topLayout .leftLayout vaadin-number-field::part(label),
+    .topLayout .leftLayout vaadin-number-field::part(input-field),
+    .topLayout .leftLayout vaadin-text-area::part(label),
+    .topLayout .leftLayout vaadin-text-area::part(input-field),
+    .topLayout .leftLayout vaadin-integer-field::part(label),
+    .topLayout .leftLayout vaadin-integer-field::part(input-field),
+    .topLayout .leftLayout vaadin-integer-field::part(value),
+    .topLayout .leftLayout vaadin-integer-field::part(placeholder),
+    .topLayout .leftLayout vaadin-checkbox::part(label),
+    .topLayout .leftLayout vaadin-radio-button::part(label) {
+        font-size: calc(6px + (10 - 6) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+    }
+
+    .topLayout .rightLayout {
+        width: 50%;
+        font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+        --_cell-font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300)));
+    }
+    .topLayout .rightLayout vaadin-text-field::part(label),
+    .topLayout .rightLayout vaadin-text-field::part(input-field),
+    .topLayout .rightLayout vaadin-text-field::part(value),
+    .topLayout .rightLayout vaadin-text-field::part(placeholder),
+    .topLayout .rightLayout vaadin-combo-box::part(label),
+    .topLayout .rightLayout vaadin-combo-box::part(input-field),
+    .topLayout .rightLayout vaadin-combo-box::part(value),
+    .topLayout .rightLayout vaadin-combo-box::part(placeholder),
+    .topLayout .rightLayout vaadin-date-picker::part(label),
+    .topLayout .rightLayout vaadin-date-picker::part(input-field),
+    .topLayout .rightLayout vaadin-date-picker::part(value),
+    .topLayout .rightLayout vaadin-date-picker::part(placeholder),
+    .topLayout .rightLayout vaadin-number-field::part(label),
+    .topLayout .rightLayout vaadin-number-field::part(input-field),
+    .topLayout .rightLayout vaadin-text-area::part(label),
+    .topLayout .rightLayout vaadin-text-area::part(input-field),
+    .topLayout .rightLayout vaadin-checkbox::part(label),
+    .topLayout .rightLayout vaadin-radio-button::part(label) {
+        font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+    }
+
+    .managementButtonsLayout {
+        justify-content: flex-start;
+        gap: 10px;
+        flex-direction: row;
+        font-size: calc(8px + (8 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+    }
+    .managementButtonsLayout > button {
+        flex-grow: 0;
+        min-width: auto;
+    }
+    .managementButtonsLayout vaadin-button::part(label) {
+        font-size: calc(8px + (8 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+        white-space: nowrap;
+    }
+    .articleGrid {
+        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));
+    }
+    .rightButtonsLayout {
+        flex-direction: row;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+    .loanLayout {
+        width: 40%;
+        flex-direction: row;
+        gap: 10px;
+        font-size: calc(8px + (8 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+    }
+
+    /* loanDialogLayout als Ganzes - übergeordnete Font-Size */
+    vaadin-dialog-overlay.loanDialog vaadin-vertical-layout.loanDialogLayout {
+        width: 40%;
+        flex-direction: column;
+        gap: 10px;
+        font-size: calc(8px + (8 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+        min-width: 80%;
+        height: auto;
+        max-height: 90%;
+        overflow-y: auto;
+    }
+
+    /* Komponenten INNERHALB von .loanDialogLayout (die NICHT im Grid sind) */
+    .loanDialogLayout vaadin-text-field::part(label),
+    .loanDialogLayout vaadin-text-field::part(input-field),
+    .loanDialogLayout vaadin-combo-box::part(label),
+    .loanDialogLayout vaadin-combo-box::part(input-field),
+    .loanDialogLayout vaadin-date-picker::part(label),
+    .loanDialogLayout vaadin-date-picker::part(input-field),
+    .loanDialogLayout vaadin-number-field::part(label),
+    .loanDialogLayout vaadin-number-field::part(input-field),
+    .loanDialogLayout vaadin-text-area::part(label),
+    .loanDialogLayout vaadin-text-area::part(input-field),
+    .loanDialogLayout vaadin-integer-field::part(label),
+    .loanDialogLayout vaadin-integer-field::part(input-field),
+    .loanDialogLayout vaadin-checkbox::part(label),
+    .loanDialogLayout vaadin-radio-button::part(label) {
+        font-size: calc(8px + (8 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+    }
+
+    .loanButtonsLayout {
+        flex-direction: row;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .attributeGridLayout {
+        min-width: 30vw;
+        margin-bottom: 20px;
+        min-height: 15vw;
+        /*width: 50%;*/
+        flex-direction: column !important;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        gap: var(--lumo-space-m);
+        word-break: break-word;
+    }
+    .attributeGridLayout > * {
+        margin-right: 0;
+        margin-bottom: var(--lumo-space-xs);
+        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));
+        width: auto;
+        height: auto;
+        word-break: break-word;
+    }
+
+    .historyTitle {
+        font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));
+        margin-bottom: 15px;
+    }
+    .historyGrid {
+        height: 300px !important;
+    }
+    .userDialogLayout {
+        max-width: 80%;
+        height: auto;
+        max-height: 90%;
+        overflow-y: auto;
+        font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));
+        flex-direction: row;
+    }
+    .userLayout {
+        width: 50%;
+        height: auto;
+        max-height: 90%;
+        overflow-y: auto;
+        font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));
+    }
+    .contactsLayout {
+        width: 80%;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: baseline;
+        font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));
+        row-gap: 4px;
+        column-gap: 4px;
+    }
+    .articlesLayout {
+        min-width: 80%;
+        height: auto;
+        max-height: 90%;
+        overflow-y: auto;
+        font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));
+    }
+    .vaadin-dialog-overlay.myContactDialog::part(overlay) {
+        width: fit-content;
+        max-width: none;
+        min-width: 80%;
+    }
+    vaadin-vertical-layout.attributeGridLayout {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        padding: var(--lumo-space-s);
+        gap: 2px;
+        min-height: 0;
+    }
+
+    /* --- REGELN FÜR VAADIN GRIDS (ABSOLUT KRITISCH FÜR DEINE SCHRIFTGRÖSSE) --- */
+
+    /* SEHR HOHE SPEZIFITÄT für Grid-Zellinhalte im Dialog */
+    /* Zielt direkt auf vaadin-grid-cell-content innerhalb des div[part="cell"] des Grids im Dialog */
+    vaadin-dialog-overlay.loanDialog vaadin-vertical-layout.loanDialogLayout vaadin-grid div[part="cell"] ::slotted(vaadin-grid-cell-content) {
+        font-size: calc(8px + (8 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow: visible !important;
+        display: flex;
+        align-items: center;
+    }
+
+    /* GRID HEADER ZELLEN IM DIALOG */
+    vaadin-dialog-overlay.loanDialog vaadin-vertical-layout.loanDialogLayout vaadin-grid::part(header-cell) {
+        font-size: calc(8px + (8 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+        white-space: normal;
+        word-break: break-word;
+        padding: var(--lumo-space-xs) var(--lumo-space-s) !important;
+        height: auto !important;
+    }
+
+    /* GRID DATENZELLEN (ÄUßERER BEREICH) IM DIALOG */
+    vaadin-dialog-overlay.loanDialog vaadin-vertical-layout.loanDialogLayout vaadin-grid::part(cell) {
+        padding: var(--lumo-space-xs) var(--lumo-space-s) !important;
+        height: auto !important;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    /* --- REGELN FÜR COMBOBOX OVERLAYS --- */
+
+    /* Dies ist der Selektor für das Dropdown-Overlay der ComboBoxen */
+    /* Zielt auf das Overlay selbst, damit der Text darin die richtige Größe hat */
+    vaadin-combo-box-overlay::part(overlay) {
+        font-size: calc(8px + (8 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+    }
+    /* Für die einzelnen Items im Dropdown-Menü */
+    vaadin-combo-box-item::part(content) {
+        font-size: calc(8px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+    }
+
+    /* FALLBACK / ALLGEMEINE REGELN FÜR ALLE GRIDS (falls oben nicht zutrifft) */
+    vaadin-grid [part~="cell"] ::slotted(vaadin-grid-cell-content) {
+        font-size: calc(8px + (8 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow: visible !important;
+        display: flex;
+        align-items: center;
+    }
+    vaadin-grid::part(header-cell) {
+        font-weight: bold !important;
+        padding-top: var(--lumo-space-s) !important;
+        padding-bottom: var(--lumo-space-s) !important;
+        line-height: normal !important;
+        height: auto !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow: visible !important;
+    }
+    vaadin-grid::part(cell) {
+        font-size: calc(8px + (8 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+        padding-top: var(--lumo-space-s) !important;
+        padding-bottom: var(--lumo-space-s) !important;
+        line-height: normal !important;
+        height: auto !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow: visible !important;
+    }
+    /* ComboBoxen als Filter in Grids */
+    vaadin-grid [part~="cell"] ::slotted(vaadin-combo-box::part(label)),
+    vaadin-grid [part~="cell"] ::slotted(vaadin-combo-box::part(input-field)),
+    vaadin-grid [part~="cell"] ::slotted(vaadin-combo-box::part(value)),
+    vaadin-grid [part~="cell"] ::slotted(vaadin-combo-box::part(placeholder)) {
+        font-size: calc(8px + (8 - 4) * ((100vw - 300px) / (1600 - 300))) !important;
+        line-height: normal !important;
+    }
+    /* Anpassung für h2-Elemente innerhalb von .attributeGridLayout */
+    .attributeGridLayout h2 {
+        font-size: calc(12px + (26 - 10) * ((100vw - 300px) / (1600 - 300)));
+        font-weight: bold; /* Wenn du sicherstellen willst, dass es fett ist */
+        /* Füge hier weitere h2-spezifische Stile hinzu, z.B. margin-top, margin-bottom */
+    }
+} /* ENDE der @media screen and (min-width: 993px) Media Query */
+
+
+
+
+/*!* ==========================================================================*/
+/*   RESPONSIVE DESIGN ANPASSUNGEN ab 993px*/
+/*   ========================================================================== *!*/
+
+/*@media screen and (min-width: 993px) {*/
+/*    vaadin-grid.rightLayout [part~="cell"] ::slotted(vaadin-grid-cell-content),*/
+/*    vaadin-grid.attributeGridLayout [part~="cell"] ::slotted(vaadin-grid-cell-content),*/
+/*    vaadin-dialog-overlay.loanDialog vaadin-vertical-layout.loanDialogLayout vaadin-grid [part~="cell"] ::slotted(vaadin-grid-cell-content),*/
+/*        !* Wenn das Grid selbst eine spezifische Klasse im Dialog hat (z.B. 'historyGrid' wie besprochen) *!*/
+/*    vaadin-dialog-overlay.loanDialog vaadin-vertical-layout.loanDialogLayout vaadin-grid.historyGrid [part~="cell"] ::slotted(vaadin-grid-cell-content) {*/
+/*        !* Diese Schriftgröße sollte jetzt greifen! *!*/
+/*        font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important; !* Zielgröße *!*/
+/*        line-height: normal !important;*/
+/*        white-space: normal !important;*/
+/*        word-break: break-word !important;*/
+/*        overflow: visible !important;*/
+/*        display: flex;*/
+/*        align-items: center;*/
+/*    }*/
+
+/*    !* Optional: Auch die Header-Zellen des Grids im Dialog anpassen, falls nötig *!*/
+/*    vaadin-dialog-overlay.loanDialog vaadin-vertical-layout.loanDialogLayout vaadin-grid::part(header-cell),*/
+/*    vaadin-dialog-overlay.loanDialog vaadin-vertical-layout.loanDialogLayout vaadin-grid.historyGrid::part(header-cell) {*/
+/*        font-size: calc(8px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important; !* Etwas größer für Header *!*/
+/*        font-weight: bold;*/
+/*        line-height: normal !important;*/
+/*        white-space: normal;*/
+/*        word-break: break-word;*/
+/*        padding: var(--lumo-space-xs) var(--lumo-space-s) !important;*/
+/*        height: auto !important;*/
+/*    }*/
+
+/*    !* Optional: Die Zellen selbst (nicht der Inhalt) im Dialog Grid *!*/
+/*    vaadin-dialog-overlay.loanDialog vaadin-vertical-layout.loanDialogLayout vaadin-grid::part(cell),*/
+/*    vaadin-dialog-overlay.loanDialog vaadin-vertical-layout.loanDialogLayout vaadin-grid.historyGrid::part(cell) {*/
+/*        padding: var(--lumo-space-xs) var(--lumo-space-s) !important;*/
+/*        height: auto !important;*/
+/*        white-space: normal;*/
+/*        word-break: break-word;*/
+/*    }*/
+
+/*    {*/
+/*        font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*        line-height: normal !important;*/
+/*        white-space: normal !important;*/
+/*        word-break: break-word !important;*/
+/*        overflow: visible !important;*/
+/*        display: flex;*/
+/*        align-items: center;*/
+/*    }*/
+/*    .my-test-view-view {*/
+/*        padding: 20px;*/
+/*        font-size: 12px;*/
+/*    }*/
+/*    .topLayout {*/
+/*        width: 80%;*/
+/*        flex-direction: row;*/
+/*        flex-wrap: nowrap;*/
+/*        align-items: baseline;*/
+/*    }*/
+/*    .topLayout > * {*/
+/*        margin-right: 10px;*/
+/*        margin-bottom: 0;*/
+/*        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*    }*/
+/*    .topLayout1 {*/
+/*        width: 100%;*/
+/*        flex-direction: row;*/
+/*        flex-wrap: nowrap;*/
+/*        align-items: baseline;*/
+/*    }*/
+/*    .topLayout1 > * {*/
+/*        margin-right: 10px;*/
+/*        margin-bottom: 0;*/
+/*        font-size: 12px;*/
+/*    }*/
+/*    .v-dialog {*/
+/*        width: 80%;*/
+/*        height: 90%;*/
+/*        overflow-y: auto;*/
+/*    }*/
+/*    .articleDialog::part(overlay) {*/
+/*        width: 80% !important;*/
+/*        max-width: 90% !important;*/
+/*        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*        font-family: 'Roboto', sans-serif;*/
+/*        word-break: break-word;*/
+/*    }*/
+/*    .loanDialog::part(overlay) {*/
+/*        width: 40% !important;*/
+/*        max-width: 60% !important;*/
+/*        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*    }*/
+/*    .dialogLayout {*/
+/*        width: 80%;*/
+/*        height: 90%;*/
+/*        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*    }*/
+/*    .attributeLayout {*/
+/*        width: 80%;*/
+/*        height: 90%;*/
+/*        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*        flex-direction: column;*/
+/*    }*/
+/*    .topLayoutContact {*/
+/*        min-width: fit-content;*/
+/*        flex-direction: row;*/
+/*        flex-grow: 1;*/
+/*        align-items: flex-start;*/
+/*    }*/
+/*    .leftLayoutContact {*/
+/*        width: 40% !important;*/
+/*        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*    }*/
+/*    .rightLayoutContact {*/
+/*        width: 60% !important;*/
+/*        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*        gap: 0;*/
+/*    }*/
+
+/*    !* Regeln für das .leftLayout selbst (falls es direkten Text enthält) *!*/
+/*    .topLayout .leftLayout { !* Spezifischer Pfad, da es ein Kind von topLayout ist *!*/
+/*        width: 50%;*/
+/*        font-size: calc(6px + (10 - 6) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*    }*/
+/*    !* Komponenten INNERHALB von .topLayout .leftLayout *!*/
+/*    .topLayout .leftLayout vaadin-text-field::part(label),*/
+/*    .topLayout .leftLayout vaadin-text-field::part(input-field),*/
+/*    .topLayout .leftLayout vaadin-text-field::part(value),*/
+/*    .topLayout .leftLayout vaadin-text-field::part(placeholder),*/
+/*    .topLayout .leftLayout vaadin-combo-box::part(label),*/
+/*    .topLayout .leftLayout vaadin-combo-box::part(input-field),*/
+/*    .topLayout .leftLayout vaadin-combo-box::part(value),*/
+/*    .topLayout .leftLayout vaadin-combo-box::part(placeholder),*/
+/*    .topLayout .leftLayout vaadin-date-picker::part(label),*/
+/*    .topLayout .leftLayout vaadin-date-picker::part(input-field),*/
+/*    .topLayout .leftLayout vaadin-date-picker::part(value),*/
+/*    .topLayout .leftLayout vaadin-date-picker::part(placeholder),*/
+/*    .topLayout .leftLayout vaadin-number-field::part(label),*/
+/*    .topLayout .leftLayout vaadin-number-field::part(input-field),*/
+/*    .topLayout .leftLayout vaadin-text-area::part(label),*/
+/*    .topLayout .leftLayout vaadin-text-area::part(input-field),*/
+/*    .topLayout .leftLayout vaadin-integer-field::part(label),*/
+/*    .topLayout .leftLayout vaadin-integer-field::part(input-field),*/
+/*    .topLayout .leftLayout vaadin-integer-field::part(value),*/
+/*    .topLayout .leftLayout vaadin-integer-field::part(placeholder),*/
+/*    .topLayout .leftLayout vaadin-checkbox::part(label),*/
+/*    .topLayout .leftLayout vaadin-radio-button::part(label) {*/
+/*        font-size: calc(6px + (10 - 6) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*        line-height: normal !important;*/
+/*    }*/
+
+
+/*    .topLayout .rightLayout { !* Dies war bereits da, prüfen ob der Pfad im DOM stimmt *!*/
+/*        width: 50%;*/
+/*        font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*        !* Custom property für interne Verwendung durch Vaadin, falls sie es nutzt *!*/
+/*        --_cell-font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300)));*/
+/*    }*/
+/*    !* Komponenten INNERHALB von .topLayout .rightLayout *!*/
+/*    !* Gezielter Selektor für alle relevanten Komponenten-Teile *!*/
+/*    .topLayout .rightLayout vaadin-text-field::part(label),*/
+/*    .topLayout .rightLayout vaadin-text-field::part(input-field),*/
+/*    .topLayout .rightLayout vaadin-text-field::part(value),*/
+/*    .topLayout .rightLayout vaadin-text-field::part(placeholder),*/
+/*    .topLayout .rightLayout vaadin-combo-box::part(label),*/
+/*    .topLayout .rightLayout vaadin-combo-box::part(input-field),*/
+/*    .topLayout .rightLayout vaadin-combo-box::part(value),*/
+/*    .topLayout .rightLayout vaadin-combo-box::part(placeholder),*/
+/*    .topLayout .rightLayout vaadin-date-picker::part(label),*/
+/*    .topLayout .rightLayout vaadin-date-picker::part(input-field),*/
+/*    .topLayout .rightLayout vaadin-date-picker::part(value),*/
+/*    .topLayout .rightLayout vaadin-date-picker::part(placeholder),*/
+/*    .topLayout .rightLayout vaadin-number-field::part(label),*/
+/*    .topLayout .rightLayout vaadin-number-field::part(input-field),*/
+/*    .topLayout .rightLayout vaadin-text-area::part(label),*/
+/*    .topLayout .rightLayout vaadin-text-area::part(input-field),*/
+/*    .topLayout .rightLayout vaadin-checkbox::part(label),*/
+/*    .topLayout .rightLayout vaadin-radio-button::part(label),*/
+/*    .topLayout .rightLayout vaadin-grid-cell-content::part(label),*/
+/*    .topLayout .rightLayout vaadin-grid-cell-content::part(output-field),*/
+/*    .topLayout .rightLayout vaadin-grid-cell-content::part(value),*/
+/*    .topLayout .rightLayout vaadin-grid-cell-content::part(placeholder)*/
+/*    {*/
+/*        font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*        line-height: normal !important;*/
+/*    }*/
+
+/*    !* *************************************************************** *!*/
+/*    !* ** REGELN FÜR GRIDS (attributeGridLayout und grids in .rightLayout) ** *!*/
+/*    !* *************************************************************** *!*/
+
+/*    !* Gezielte Regeln für Header- und Datenzellen selbst *!*/
+/*    !* Wenn das Grid die Klasse .rightLayout hat ODER .attributeGridLayout *!*/
+
+/*    vaadin-grid.rightLayout::part(cell),*/
+/*    vaadin-grid.attributeGridLayout::part(cell) {*/
+/*        font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*        padding-top: var(--lumo-space-s) !important;*/
+/*        padding-bottom: var(--lumo-space-s) !important;*/
+/*        line-height: normal !important;*/
+/*        height: auto !important;*/
+/*        white-space: normal !important;*/
+/*        word-break: break-word !important;*/
+/*        overflow: visible !important;*/
+/*    }*/
+/*    vaadin-grid.rightLayout::part(header-cell),*/
+/*    vaadin-grid.attributeGridLayout::part(header-cell) {*/
+/*        font-weight: bold !important;*/
+/*        padding-top: var(--lumo-space-s) !important;*/
+/*        padding-bottom: var(--lumo-space-s) !important;*/
+/*        line-height: normal !important;*/
+/*        height: auto !important;*/
+/*        white-space: normal !important;*/
+/*        word-break: break-word !important;*/
+/*        overflow: visible !important;*/
+/*    }*/
+
+/*        !* Der Schlüssel: Die Regel für den Inhalt der Grid-Zellen *!*/
+/*    !* (betrifft Header-Texte, Daten und Filter-Komponenten im Slot) *!*/
+/*    !* Erhöhte Spezifität durch vaadin-grid.Klasse *!*/
+/*    vaadin-grid.rightLayout [part~="cell"] ::slotted(vaadin-grid-cell-content),*/
+/*    vaadin-grid.attributeGridLayout [part~="cell"] ::slotted(vaadin-grid-cell-content) {*/
+/*        font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*        line-height: normal !important;*/
+/*        white-space: normal !important;*/
+/*        word-break: break-word !important;*/
+/*        overflow: visible !important;*/
+/*        display: flex;*/
+/*        align-items: center;*/
+/*    }*/
+
+/*    !* Spezifische Anpassung für ComboBoxen (als Filter) INNERHALB von Grid-Zellen *!*/
+/*    !* Noch spezifischer, indem wir auch ::part(label/input-field) ansprechen *!*/
+/*    vaadin-grid.rightLayout [part~="cell"] ::slotted(vaadin-combo-box::part(label)),*/
+/*    vaadin-grid.rightLayout [part~="cell"] ::slotted(vaadin-combo-box::part(input-field)),*/
+/*    vaadin-grid.rightLayout [part~="cell"] ::slotted(vaadin-combo-box::part(value)),*/
+/*    vaadin-grid.rightLayout [part~="cell"] ::slotted(vaadin-combo-box::part(placeholder)),*/
+/*    vaadin-grid.attributeGridLayout [part~="cell"] ::slotted(vaadin-combo-box::part(label)),*/
+/*    vaadin-grid.attributeGridLayout [part~="cell"] ::slotted(vaadin-combo-box::part(input-field)),*/
+/*    vaadin-grid.attributeGridLayout [part~="cell"] ::slotted(vaadin-combo-box::part(value)),*/
+/*    vaadin-grid.attributeGridLayout [part~="cell"] ::slotted(vaadin-combo-box::part(placeholder))*/
+/*    {*/
+/*        font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*        line-height: normal !important;*/
+/*    }*/
+
+
+/*    !*.leftLayout {*!*/
+/*    !*    width: 50%;*!*/
+/*    !*    font-size: calc(6px + (10 - 6) * ((100vw - 300px) / (1600 - 300))) !important;*!*/
+/*    !*}*!*/
+
+/*    !*.rightLayout {*!*/
+/*    !*    width: 50%;*!*/
+/*    !*    font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;*!*/
+/*    !*    --_cell-font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300)));*!*/
+/*    !*}*!*/
+
+
+
+/*    .managementButtonsLayout {*/
+/*        justify-content: flex-start;*/
+/*        gap: 10px;*/
+/*        flex-direction: row;*/
+/*        !* font-size hier kann für allgemeine Texte im Layout bleiben, aber nicht für den Button-Text selbst *!*/
+/*        font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*    }*/
+
+/*    !* Diese Regel ist für den Vaadin Button selbst, aber nicht direkt für seinen inneren Text *!*/
+/*    .managementButtonsLayout > button {*/
+/*        flex-grow: 0;*/
+/*        min-width: auto;*/
+/*        !* Die font-size hier hat nur Einfluss auf den Button-Körper, nicht den Text im Shadow DOM *!*/
+/*        !* font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300))); *!*/
+/*    }*/
+
+/*    !* NEU / AKTUALISIERT: Diese Regel Zielt auf den Text innerhalb des Vaadin-Buttons *!*/
+/*    .managementButtonsLayout vaadin-button::part(label) {*/
+/*        font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*        line-height: normal !important;*/
+/*        white-space: nowrap;*/
+/*    }*/
+/*    .articleGrid {*/
+/*        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*    }*/
+/*    .rightButtonsLayout {*/
+/*        flex-direction: row;*/
+/*        gap: 10px;*/
+/*        justify-content: flex-end;*/
+/*    }*/
+/*    .loanLayout {*/
+/*        width: 40%;*/
+/*        flex-direction: row;*/
+/*        gap: 10px;*/
+/*        font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*    }*/
+/*    !*.loanDialogLayout {*!*/
+/*    !*    width: 40%;*!*/
+/*    !*    flex-direction: column;*!*/
+/*    !*    gap: 10px;*!*/
+/*    !*    font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;*!*/
+/*    !*}*!*/
+
+/*    !* Erhöhte Spezifität, wenn .loanDialogLayout innerhalb eines vaadin-dialog oder einer spezifischen Dialog-Klasse liegt *!*/
+/*    vaadin-dialog .loanDialogLayout, !* Wenn es ein Kind eines beliebigen vaadin-dialog ist *!*/
+/*    .loanDialog .loanDialogLayout,   !* Wenn der Dialog selbst die Klasse .loanDialog hat (wie in deinem Code für ::part(overlay)) *!*/
+/*    .loanDialogLayout { !* Deine ursprüngliche Regel als Fallback *!*/
+/*        width: 40%; !* Behalte deine Layout-Eigenschaften bei *!*/
+/*        flex-direction: column;*/
+/*        gap: 10px;*/
+/*        !* Font-size direkt auf das Layout-Element *!*/
+/*        font-size: calc(6px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*    }*/
+
+/*    !* Wichtig: Wenn der Text innerhalb von Vaadin-Komponenten im loanDialogLayout ist,*/
+/*       musst du auch diese Komponenten direkt ansprechen, ähnlich wie du es für .topLayout gemacht hast. *!*/
+/*    .loanDialogLayout vaadin-text-field::part(label),*/
+/*    .loanDialogLayout vaadin-text-field::part(input-field),*/
+/*    .loanDialogLayout vaadin-combo-box::part(label),*/
+/*    .loanDialogLayout vaadin-combo-box::part(input-field),*/
+/*    .loanDialogLayout vaadin-date-picker::part(label),*/
+/*    .loanDialogLayout vaadin-date-picker::part(input-field),*/
+/*    .loanDialogLayout vaadin-number-field::part(label),*/
+/*    .loanDialogLayout vaadin-number-field::part(input-field),*/
+/*    .loanDialogLayout vaadin-text-area::part(label),*/
+/*    .loanDialogLayout vaadin-text-area::part(input-field),*/
+/*    .loanDialogLayout vaadin-integer-field::part(label),*/
+/*    .loanDialogLayout vaadin-integer-field::part(input-field),*/
+/*    .loanDialogLayout vaadin-checkbox::part(label),*/
+/*    .loanDialogLayout vaadin-radio-button::part(label),*/
+/*    .loanDialogLayout vaadin-grid [part~="cell"] ::slotted(vaadin-grid-cell-content) {*/
+/*        font-size: calc(8px + (6 - 4) * ((100vw - 300px) / (1600 - 300))) !important;*/
+/*        line-height: normal !important;*/
+/*    }*/
+
+
+/*    .loanButtonsLayout {*/
+/*        flex-direction: row;*/
+/*        gap: 10px;*/
+/*        justify-content: flex-end;*/
+/*    }*/
+/*    .loanDialogLayout {*/
+/*        min-width: 80%;*/
+/*        height: auto;*/
+/*        max-height: 90%;*/
+/*        overflow-y: auto;*/
+/*        font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*    }*/
+/*    .attributeGridLayout {*/
+/*        min-width: 60vw;*/
+/*        margin-bottom: 20px;*/
+/*        min-height: 40vw;*/
+/*        width: 50%;*/
+/*        flex-direction: column !important;*/
+/*        flex-wrap: nowrap;*/
+/*        align-items: flex-start;*/
+/*        gap: var(--lumo-space-m);*/
+/*        word-break: break-word;*/
+
+/*    }*/
+
+/*    .attributeGridLayout > * {*/
+/*        margin-right: 0;*/
+/*        margin-bottom: var(--lumo-space-xs);*/
+/*        font-size: calc(8px + (10 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*        width: auto;*/
+/*        height: auto;*/
+/*        word-break: break-word;*/
+
+/*    }*/
+/*    .historyTitle {*/
+/*        font-size: calc(10px + (16 - 10) * ((100vw - 300px) / (1600 - 300)));*/
+/*        margin-bottom: 15px;*/
+/*    }*/
+/*    .historyGrid {*/
+/*        height: 300px !important;*/
+/*    }*/
+/*    .userDialogLayout {*/
+/*        max-width: 80%;*/
+/*        height: auto;*/
+/*        max-height: 90%;*/
+/*        overflow-y: auto;*/
+/*        font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*        flex-direction: row;*/
+/*    }*/
+/*    .userLayout {*/
+/*        width: 50%;*/
+/*        height: auto;*/
+/*        max-height: 90%;*/
+/*        overflow-y: auto;*/
+/*        font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*    }*/
+/*    .contactsLayout {*/
+/*        width: 80%;*/
+/*        flex-direction: row;*/
+/*        flex-wrap: nowrap;*/
+/*        align-items: baseline;*/
+/*        font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*        row-gap: 4px;*/
+/*        column-gap: 4px;*/
+/*    }*/
+/*    .articlesLayout{*/
+/*        min-width: 80%;*/
+/*        height: auto;*/
+/*        max-height: 90%;*/
+/*        overflow-y: auto;*/
+/*        font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));*/
+/*    }*/
+/*    .vaadin-dialog-overlay.myContactDialog::part(overlay) {*/
+/*        width: fit-content;*/
+/*        max-width: none;*/
+/*        min-width: 80%;*/
+/*    }*/
+/*    !* Das Haupt-Content-Layout des Dialogs (VerticalLayout mit attributeGridLayout) *!*/
+/*    vaadin-vertical-layout.attributeGridLayout {*/
+/*        flex-grow: 1;*/
+/*        display: flex;*/
+/*        flex-direction: column;*/
+/*        padding: var(--lumo-space-s);*/
+/*        gap: 2px;*/
+/*        min-height: 0;*/
+/*    }*/
+/*    !*vaadin-grid.attributeGridLayout::part(header-cell) {*!*/
+/*    !*    font-size: calc(8px + (8 - 6) * ((100vw - 300px) / (1600 - 300)));*!*/
+/*    !*    padding-top: var(--lumo-space-s) !important;*!*/
+/*    !*    padding-bottom: var(--lumo-space-s) !important;*!*/
+/*    !*    line-height: normal !important;*!*/
+/*    !*    height: auto !important;*!*/
+/*    !*    white-space: normal !important;*!*/
+/*    !*    word-break: break-word;*!*/
+/*    !*    overflow: visible !important;*!*/
+/*    !*}*!*/
+
+/*}*/

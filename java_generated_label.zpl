@@ -1,0 +1,10 @@
+^XA
+^PW400
+^LH0,0
+^FO340,15^ADN,40,20^FD20^FS
+^FO20,70^ADN,50,25^FDNeu^FS
+^FO20,120^ADN,30,15^FDBosch^FS
+^FO0,162^FB400,1,0,C,0^ADN,25,12^FDFirma Beispielhaft GmbH^FS
+^FO0,187^FB400,1,0,C,0^ADN,25,12^FDBeispielstrasse 14, 4538 Beispielhausen^FS
+^FO0,212^FB400,1,0,C,0^ADN,25,12^FDTel: +41 32 100 00 00 | info@example.ch^FS
+^XZ

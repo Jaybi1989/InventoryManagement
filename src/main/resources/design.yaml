@@ -1,0 +1,33 @@
+design:
+  colors:
+    # Hauptfarbe (vorher Blau) = --lumo-primary-color
+    blue_hex: "#C7C7C7"
+    blue: "rgb(199, 199, 199)"
+    darkbluetolightblue: "linear-gradient(to bottom, #1F1F1F, #8C8C8C)"
+    # Erfolg (vorher Grün) = --lumo-success-color
+    green_hex: "#D9D9D9"
+    green: "rgb(217, 217, 217)"
+    # Fehler (vorher Orange) = --lumo-error-color
+    orange_hex: "#8C8C8C"
+    orange: "rgb(140, 140, 140)"
+    blue_green: "linear-gradient(to right, #999999, #D9D9D9)"
+    # Hintergrund = --lumo-base-color
+    overlayblue: "#292929"
+    overlaygreen: "#3D3D3D"
+    linearGradientBackground: "linear-gradient(to right, #292929, #3D3D3D)"
+
+    # Dunkle Grautöne
+    anthrazit_hex: "#1F1F1F"
+    anthrazit: "rgb(31, 31, 31)"
+    darkgrey: "#383838"
+    verydark: "#121212"
+    # Helle Grautöne
+    grey: "#D9D9D9"
+    lightgray: "#E6E6E6"
+
+    # Titel = --lumo-secondary-text-color
+    title: "#B3B3B3"
+    # Text = --lumo-body-text-color
+    text: "#EBEBEB"
+  fonts:
+    textFontFamily: "Roboto"

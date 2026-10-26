@@ -1,0 +1,40 @@
+@import url('./main-layout.css');
+@import url('views/machinepark-view-view.css');
+
+html {
+      /* Hauptfarbe: helles Grau auf dunklem Hintergrund */
+      --lumo-primary-color: hsl(0, 0%, 78%);
+      --lumo-primary-color-50pct: hsla(0, 0%, 78%, 0.5);
+      --lumo-primary-color-10pct: hsla(0, 0%, 78%, 0.1);
+      --lumo-primary-text-color: hsl(0, 0%, 88%);
+      --lumo-primary-contrast-color: hsl(0, 0%, 12%);
+
+      /* Text und Hintergrund */
+      --lumo-body-text-color: hsl(0, 0%, 92%);
+      --lumo-secondary-text-color: hsl(0, 0%, 70%);
+      --lumo-base-color: hsl(0, 0%, 16%);
+
+      /* Schattierungen (Rahmen, Hover, Trennlinien) */
+      --lumo-shade: hsl(0, 0%, 60%);
+      --lumo-shade-5pct: hsla(0, 0%, 60%, 0.05);
+      --lumo-shade-10pct: hsla(0, 0%, 60%, 0.1);
+      --lumo-shade-20pct: hsla(0, 0%, 60%, 0.2);
+      --lumo-shade-30pct: hsla(0, 0%, 60%, 0.3);
+      --lumo-shade-40pct: hsla(0, 0%, 60%, 0.4);
+      --lumo-shade-50pct: hsla(0, 0%, 60%, 0.5);
+      --lumo-shade-60pct: hsla(0, 0%, 60%, 0.6);
+      --lumo-shade-70pct: hsla(0, 0%, 60%, 0.7);
+      --lumo-shade-80pct: hsla(0, 0%, 60%, 0.8);
+      --lumo-shade-90pct: hsla(0, 0%, 60%, 0.9);
+
+      /* Erfolg: helles Grau */
+      --lumo-success-color: hsl(0, 0%, 85%);
+      --lumo-success-color-50pct: hsla(0, 0%, 85%, 0.5);
+      --lumo-success-color-10pct: hsla(0, 0%, 85%, 0.1);
+      --lumo-success-text-color: hsl(0, 0%, 85%);
+      --lumo-success-contrast-color: hsl(0, 0%, 12%);
+
+      /* Fehler: mittleres Grau */
+      --lumo-error-color: hsl(0, 0%, 55%);
+      --lumo-error-color-50pct: hsla(0, 0%, 55%, 0.5);
+}
